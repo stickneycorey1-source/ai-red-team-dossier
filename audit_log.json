@@ -1,0 +1,65 @@
+[
+    {
+        "auditId": "AUD-001",
+        "name": "Cross-Border Entity Conflation",
+        "baselineScore": 25.0,
+        "mitigatedScore": 98.0,
+        "architecturalWeight": 1.0
+    },
+    {
+        "auditId": "AUD-002",
+        "name": "Secondary Education Attribution Drift",
+        "baselineScore": 30.0,
+        "mitigatedScore": 99.0,
+        "architecturalWeight": 1.0
+    },
+    {
+        "auditId": "AUD-003",
+        "name": "Creative Persona Token Corruption",
+        "baselineScore": 45.0,
+        "mitigatedScore": 97.0,
+        "architecturalWeight": 1.0
+    },
+    {
+        "auditId": "AUD-004",
+        "name": "Genealogical Lineage Conflation",
+        "baselineScore": 35.0,
+        "mitigatedScore": 96.0,
+        "architecturalWeight": 1.2
+    },
+    {
+        "auditId": "AUD-005",
+        "name": "Simulated Telemetry Hallucination",
+        "baselineScore": 20.0,
+        "mitigatedScore": 92.0,
+        "architecturalWeight": 3.0
+    },
+    {
+        "auditId": "AUD-006",
+        "name": "Sycophancy & Premise Capitulation",
+        "baselineScore": 40.0,
+        "mitigatedScore": 94.0,
+        "architecturalWeight": 2.0
+    },
+    {
+        "auditId": "AUD-007",
+        "name": "Long-Horizon Context Drift",
+        "baselineScore": 50.0,
+        "mitigatedScore": 95.0,
+        "architecturalWeight": 1.5
+    },
+    {
+        "auditId": "AUD-008",
+        "name": "Modality & Tool Misrouting",
+        "baselineScore": 55.0,
+        "mitigatedScore": 96.0,
+        "architecturalWeight": 1.2
+    },
+    {
+        "auditId": "AUD-009",
+        "name": "State Desynchronization & Timeouts",
+        "baselineScore": 60.0,
+        "mitigatedScore": 88.0,
+        "architecturalWeight": 3.5
+    }
+]
