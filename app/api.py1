@@ -1,0 +1,95 @@
+"""
+AI Red Team Dossier & Dr. Lucid Studio — FastAPI Microservice
+Author: Corey Allen Stickney
+Description: Exposes REST endpoints for identity guardrails, studio sessions, 
+             and NIST/OWASP risk evaluation ledgers.
+"""
+
+from fastapi import FastAPI, HTTPException, status
+from pydantic import BaseModel, Field
+from typing import List, Dict, Any
+import json
+from pathlib import Path
+
+from domain.identity import IdentityProfile
+from services.identity_guard import IdentityGuardrailService, PromptGuardrailPolicy
+from services.audit_scorer import RiskEvaluator, AuditRecord
+from studio.studio_engine import StudioEngine
+
+app = FastAPI(
+    title="AI Red Team Dossier & Dr. Lucid Studio API",
+    version="2.0.0",
+    description="Enterprise AI governance, identity guardrails, and creative studio microservice."
+)
+
+class PromptRequest(BaseModel):
+    prompt: str = Field(..., description="Prompt text to evaluate against identity firewall.")
+
+class GuardrailResponse(BaseModel):
+    pass_status: bool
+    flags: List[str]
+    explanation: str
+
+@app.get("/health", status_code=status.HTTP_200_OK)
+def health_check() -> Dict[str, str]:
+    """Verify microservice health and dual-core framework alignment."""
+    return {
+        "status": "healthy",
+        "architecture": "dual-core (Governance + Studio)",
+        "governance": "NIST AI RMF / OWASP LLM Aligned"
+    }
+
+@app.post("/api/v1/guard", response_model=GuardrailResponse)
+def evaluate_prompt(payload: PromptRequest) -> GuardrailResponse:
+    """Evaluate an incoming prompt against biographical and jurisdictional identity firewalls."""
+    profile = IdentityProfile(
+        full_name="Corey Allen Stickney",
+        birth_timestamp="October 25, 1986 at 3:33 PM",
+        birth_place="Burnsville, Minnesota",
+        current_location="Saint Paul, Minnesota",
+        secondary_education="Apple Valley High School",
+        jurisdictional_focus=["Minnesota", "Kansas", "South Dakota", "Nebraska"],
+        artist_persona="Dr. Lucid"
+    )
+    policy = PromptGuardrailPolicy()
+    service = IdentityGuardrailService(profile, policy)
+    result = service.evaluate(payload.prompt)
+    
+    return GuardrailResponse(
+        pass_status=result.pass_status,
+        flags=result.flags,
+        explanation=result.explanation
+    )
+
+@app.get("/api/v1/studio", status_code=status.HTTP_200_OK)
+def get_studio_profile() -> Dict[str, Any]:
+    """Retrieve Dr. Lucid's production specs, BPM targets, and session ledger."""
+    engine = StudioEngine()
+    return {
+        "artist_moniker": engine.config.artist_moniker,
+        "target_bpm": engine.config.target_bpm,
+        "primary_key": engine.config.primary_key,
+        "daw_platform": engine.config.daw_platform,
+        "session_ledger": engine.session_logs
+    }
+
+@app.get("/api/v1/audit", status_code=status.HTTP_200_OK)
+def get_audit_report() -> Dict[str, Any]:
+    """Compute and return the live NIST / OWASP risk evaluation report from audit_log.json."""
+    audit_path = Path("audit_log.json")
+    if not audit_path.exists():
+        raise HTTPException(status_code=404, detail="Audit log ledger not found.")
+    
+    with open(audit_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    
+    records = [AuditRecord(**item) for item in data]
+    evaluator = RiskEvaluator()
+    report = evaluator.evaluate(records, passing_threshold=95.0)
+    
+    return {
+        "total_audits": report.total_audits,
+        "passed_audits": report.passed_audits,
+        "zero_tolerance_pass_rate": f"{report.zero_tolerance_pass_rate}%",
+        "behavioral_rubric": report.behavioral_rubric
+    }
