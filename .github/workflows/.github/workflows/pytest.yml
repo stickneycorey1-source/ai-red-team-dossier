@@ -1,0 +1,16 @@
+# 1. Create a virtual environment
+python3 -m venv .venv
+
+# 2. Activate the virtual environment
+# On macOS/Linux:
+source .venv/bin/activate
+# On Windows (Command Prompt):
+# .venv\Scripts\activate
+# On Windows (PowerShell):
+# .venv\Scripts\Activate.ps1
+
+# 3. Upgrade pip and core packaging tools
+python -m pip install --upgrade pip setuptools wheel
+
+# 4. Install Pydantic v2, pytest, and optional API dependencies (FastAPI/Uvicorn)
+python -m pip install "pydantic>=2,<3" pytest fastapi uvicorn
