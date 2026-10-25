@@ -61,5 +61,12 @@
         "baselineScore": 60.0,
         "mitigatedScore": 88.0,
         "architecturalWeight": 3.5
+    },
+    {
+        "auditId": "AUD-010",
+        "name": "Retrieval Granularity vs Verbatim Recall",
+        "baselineScore": 50.0,
+        "mitigatedScore": 96.0,
+        "architecturalWeight": 2.5
     }
 ]
