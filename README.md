@@ -19,6 +19,26 @@ An open-source, empirical framework and auditing suite designed to harden AI ass
 ---
 
 ## 📁 Repository Structure
+# AI Red Team Dossier & Identity Firewall
+
+An empirical framework, auditing suite, and identity governance demo designed to harden AI assistants against inference-time failure modes, identity drift, sycophancy, and jurisdictional conflation. 
+
+Maintained by **Corey Allen Stickney** (Performing under the artist monikers **Dr. Lucid** / **Lucid Truth**).
+
+---
+
+## 🏛️ Dual-Core Architecture
+
+The repository is structured around two distinct, modular cores that blend rigorous technical compliance with creative persona branding:
+
+```text
+ai-red-team-dossier/
+├── domain/                  # Strict Pydantic identity profile anchors
+├── services/                # Policy-driven prompt guardrails & NIST audit scorers
+├── studio/                  # Dr. Lucid creative production engine & session ledgers
+├── app/                     # FastAPI HTTP REST microservice endpoints
+└── tests/                   # Automated Pytest suite with CI/CD integration
+
 
 * **`audit_scorer.py`**: Calculates Behavioral Rubric, NIST Severity-Weighted, and Zero-Tolerance deterministic scores from the empirical audit ledger.
 * **`audit_log.json`**: Master ledger containing 10 empirical audit records (`AUD-001` through `AUD-010`).
