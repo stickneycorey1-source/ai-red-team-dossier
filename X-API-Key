@@ -1,0 +1,123 @@
+"""
+AI Red Team Dossier & Dr. Lucid Studio — FastAPI Microservice (Authenticated)
+Author: Corey Allen Stickney
+Description: Exposes authenticated REST endpoints for identity guardrails, 
+             studio sessions, and NIST/OWASP risk evaluation ledgers.
+"""
+
+from fastapi import FastAPI, HTTPException, Security, status
+from fastapi.security.api_key import APIKeyHeader
+from pydantic import BaseModel, Field
+from typing import List, Dict, Any
+import json
+from pathlib import Path
+
+from domain.identity import IdentityProfile
+from services.identity_guard import IdentityGuardrailService, PromptGuardrailPolicy
+from services.audit_scorer import RiskEvaluator, AuditRecord
+from studio.studio_engine import StudioEngine
+
+app = FastAPI(
+    title="AI Red Team Dossier & Dr. Lucid Studio API",
+    version="2.1.0",
+    description="Enterprise AI governance, identity guardrails, and creative studio microservice with API key billing tiers."
+)
+
+# --- API Key Security Configuration ---
+API_KEY_NAME = "X-API-Key"
+api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=True)
+
+# Simulated database of active subscriber keys and their tiers
+# In production, back this with SQLite/PostgreSQL linked to Stripe
+VALID_API_KEYS = {
+    "dev_key_sample_123": {"tier": "Developer", "limit": 5000},
+    "growth_key_sample_456": {"tier": "Growth", "limit": 25000},
+    "enterprise_key_sample_789": {"tier": "Enterprise", "limit": float("inf")}
+}
+
+def verify_api_key(api_key: str = Security(api_key_header)) -> Dict[str, Any]:
+    """Validate incoming API key against active subscription tiers."""
+    if api_key not in VALID_API_KEYS:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or missing API Key. Please subscribe to access compliance endpoints."
+        )
+    return VALID_API_KEYS[api_key]
+
+# --- Request Models ---
+class PromptRequest(BaseModel):
+    prompt: str = Field(..., description="Prompt text to evaluate against identity firewall.")
+
+class GuardrailResponse(BaseModel):
+    pass_status: bool
+    flags: List[str]
+    explanation: str
+    subscription_tier: str
+
+# --- Endpoints ---
+@app.get("/health", status_code=status.HTTP_200_OK)
+def health_check() -> Dict[str, str]:
+    """Verify microservice health and dual-core framework alignment (Public)."""
+    return {
+        "status": "healthy",
+        "architecture": "dual-core (Governance + Studio)",
+        "governance": "NIST AI RMF / OWASP LLM Aligned"
+    }
+
+@app.post("/api/v1/guard", response_model=GuardrailResponse)
+def evaluate_prompt(payload: PromptRequest, client_info: Dict[str, Any] = Security(verify_api_key)) -> GuardrailResponse:
+    """Evaluate an incoming prompt against biographical and jurisdictional identity firewalls (Protected)."""
+    profile = IdentityProfile(
+        full_name="Corey Allen Stickney",
+        birth_timestamp="October 25, 1986 at 3:33 PM",
+        birth_place="Burnsville, Minnesota",
+        current_location="Saint Paul, Minnesota",
+        secondary_education="Apple Valley High School",
+        jurisdictional_focus=["Minnesota", "Kansas", "South Dakota", "Nebraska"],
+        artist_persona="Dr. Lucid"
+    )
+    policy = PromptGuardrailPolicy()
+    service = IdentityGuardrailService(profile, policy)
+    result = service.evaluate(payload.prompt)
+    
+    return GuardrailResponse(
+        pass_status=result.pass_status,
+        flags=result.flags,
+        explanation=result.explanation,
+        subscription_tier=client_info["tier"]
+    )
+
+@app.get("/api/v1/studio", status_code=status.HTTP_200_OK)
+def get_studio_profile(client_info: Dict[str, Any] = Security(verify_api_key)) -> Dict[str, Any]:
+    """Retrieve Dr. Lucid's production specs and session ledger (Protected)."""
+    engine = StudioEngine()
+    return {
+        "authorized_tier": client_info["tier"],
+        "artist_moniker": engine.config.artist_moniker,
+        "target_bpm": engine.config.target_bpm,
+        "primary_key": engine.config.primary_key,
+        "daw_platform": engine.config.daw_platform,
+        "session_ledger": engine.session_logs
+    }
+
+@app.get("/api/v1/audit", status_code=status.HTTP_200_OK)
+def get_audit_report(client_info: Dict[str, Any] = Security(verify_api_key)) -> Dict[str, Any]:
+    """Compute and return the live NIST / OWASP risk evaluation report (Protected)."""
+    audit_path = Path("audit_log.json")
+    if not audit_path.exists():
+        raise HTTPException(status_code=404, detail="Audit log ledger not found.")
+    
+    with open(audit_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    
+    records = [AuditRecord(**item) for item in data]
+    evaluator = RiskEvaluator()
+    report = evaluator.evaluate(records, passing_threshold=95.0)
+    
+    return {
+        "authorized_tier": client_info["tier"],
+        "total_audits": report.total_audits,
+        "passed_audits": report.passed_audits,
+        "zero_tolerance_pass_rate": f"{report.zero_tolerance_pass_rate}%",
+        "behavioral_rubric": report.behavioral_rubric
+    }
