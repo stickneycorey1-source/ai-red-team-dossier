@@ -28,4 +28,4 @@ jobs:
       run: python -m pytest -v
 
     - name: Run Audit Scorer
-run: python3 services/audit_scorer.pyaudit_log.json
+      run: python3 services/audit_scorer.py\ audit_log.json
