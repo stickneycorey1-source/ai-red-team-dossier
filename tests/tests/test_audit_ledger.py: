@@ -1,0 +1,24 @@
+
+import json
+from pathlib import Path
+
+from services.audit_scorer import AuditRecord, RiskEvaluator
+
+
+def test_real_audit_ledger_loads_and_scores():
+    ledger_path = Path(__file__).resolve().parents[1] / "audit_log.json"
+
+    raw_records = json.loads(ledger_path.read_text(encoding="utf-8"))
+    audits = [AuditRecord(**record) for record in raw_records]
+
+    report = RiskEvaluator().evaluate(audits, passing_threshold=95.0)
+
+    assert report.total_audits == 10
+    assert report.zero_tolerance_pass_rate == 70.0
+    assert report.passed_audits == [
+        "AUD-001", "AUD-002", "AUD-003", "AUD-004",
+        "AUD-007", "AUD-008", "AUD-010",
+    ]
+    assert report.failed_audits == [
+        "AUD-005", "AUD-006", "AUD-009",
+    ]
